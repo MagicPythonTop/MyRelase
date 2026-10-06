@@ -1,0 +1,162 @@
+/* 🔥 000. УБИВАЕМ СТАНДАРТНЫЙ КУРСОР */
+*, *::before, *::after { cursor: none !important; }
+
+/* 🔥 001. БАЗОВЫЕ СТИЛИ ::before/::after — ВСЕГДА РАБОТАЮТ */
+.lava-circle-cursor::before,
+.lava-circle-cursor::after {
+    content: '' !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    border-radius: 50% !important;
+    pointer-events: none !important;
+}
+
+/* 🔥 002. ОСНОВА КУРСОРА */
+.lava-circle-cursor {
+    position: fixed !important;
+    width: 24px !important;
+    height: 24px !important;
+    pointer-events: none !important;
+    z-index: 2147483647 !important;
+    transition: transform 0.12s ease-out !important;
+    border-radius: 50% !important;
+    display: block !important;
+}
+
+/* 🔥 003. 🌤️ DEFAULT */
+body.weather-default .lava-circle-cursor::before {
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 30% 30%, #000000 0%, #333333 25%, #666666 50%, #111111 75%, #000000 100%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, transparent 60%);
+    animation: lavaFlow 2s infinite ease-in-out !important;
+    box-shadow: 0 0 25px rgba(0,0,0,0.9), inset 0 0 10px rgba(255,255,255,0.2) !important;
+}
+
+body.weather-default .lava-circle-cursor::after {
+    width: 4px !important;
+    height: 4px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: radial-gradient(circle, #333333 0%, rgba(100,100,100,0.8) 50%, transparent 100%) !important;
+}
+
+/* 🔥 004. ❄️ WINTER */
+body.weather-winter .lava-circle-cursor::before {
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 30% 30%, #4682B4 0%, #87CEEB 25%, #B0E0E6 50%, #4169E1 75%, #191970 100%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.4) 0%, transparent 60%);
+    box-shadow: 0 0 25px rgba(70,130,180,0.9), inset 0 0 10px rgba(255,255,255,0.3) !important;
+    animation: lavaFlow 2s infinite ease-in-out !important;
+}
+
+body.weather-winter .lava-circle-cursor::after {
+    width: 4px !important;
+    height: 4px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: radial-gradient(circle, #87CEEB 0%, rgba(135,206,235,0.8) 50%, transparent 100%) !important;
+}
+
+/* 🔥 005. ☀️ SUMMER + остальные (аналогично) */
+body.weather-summer .lava-circle-cursor::before {
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 30% 30%, #ff4500 0%, #ff6600 25%, #ff8c00 50%, #ff3300 75%, #cc0000 100%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, transparent 60%);
+    box-shadow: 0 0 25px rgba(255,69,0,0.9), inset 0 0 10px rgba(255,255,255,0.2) !important;
+    animation: lavaFlow 2s infinite ease-in-out !important;
+}
+
+body.weather-summer .lava-circle-cursor::after {
+    width: 4px !important;
+    height: 4px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: radial-gradient(circle, #ff6600 0%, rgba(255,100,0,0.8) 50%, transparent 100%) !important;
+}
+
+/* 🔥 006. 🌱 SPRING */
+body.weather-spring .lava-circle-cursor::before {
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 30% 30%, #228B22 0%, #32CD32 25%, #90EE90 50%, #006400 75%, #008000 100%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, transparent 60%);
+    box-shadow: 0 0 25px rgba(34,139,34,0.9), inset 0 0 10px rgba(255,255,255,0.2) !important;
+    animation: lavaFlow 2s infinite ease-in-out !important;
+}
+
+body.weather-spring .lava-circle-cursor::after {
+    width: 4px !important;
+    height: 4px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: radial-gradient(circle, #32CD32 0%, rgba(50,205,50,0.8) 50%, transparent 100%) !important;
+}
+
+/* 🔥 007. 🍂 AUTUMN */
+body.weather-autumn .lava-circle-cursor::before {
+    width: 100% !important;
+    height: 100% !important;
+    background:
+        radial-gradient(circle at 30% 30%, #8B4513 0%, #D2691E 25%, #CD853F 50%, #A0522D 75%, #654321 100%),
+        radial-gradient(circle at 70% 70%, rgba(255,255,255,0.3) 0%, transparent 60%);
+    box-shadow: 0 0 25px rgba(139,69,19,0.9), inset 0 0 10px rgba(255,255,255,0.2) !important;
+    animation: lavaFlow 2s infinite ease-in-out !important;
+}
+
+body.weather-autumn .lava-circle-cursor::after {
+    width: 4px !important;
+    height: 4px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: radial-gradient(circle, #D2691E 0%, rgba(210,105,30,0.8) 50%, transparent 100%) !important;
+}
+
+/* 🔥 ЭФФЕКТЫ + АНИМАЦИЯ */
+.lava-circle-cursor.hover-link { transform: scale(1.1) !important; }
+.lava-circle-cursor.hover-input { transform: scale(1.05) !important; }
+.lava-circle-cursor.click { transform: scale(0.9) !important; }
+
+@keyframes lavaFlow {
+    0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+    25% { transform: scale(1.05) rotate(90deg); filter: brightness(1.3); }
+    50% { transform: scale(0.98) rotate(180deg); filter: brightness(1.5); }
+    75% { transform: scale(1.03) rotate(270deg); filter: brightness(1.2); }
+}
+
+/* 🔥 СЛЕДЫ ПОГОДЫ */
+body.weather-default .trail {
+    background: radial-gradient(circle, rgba(51,51,51,0.9) 0%, rgba(0,0,0,0.4) 50%, transparent 100%) !important;
+}
+body.weather-winter .trail {
+    background: radial-gradient(circle, rgba(135,206,235,0.9) 0%, rgba(70,130,180,0.5) 50%, transparent 100%) !important;
+}
+body.weather-spring .trail {
+    background: radial-gradient(circle, rgba(50,205,50,0.9) 0%, rgba(34,139,34,0.5) 50%, transparent 100%) !important;
+}
+body.weather-summer .trail {
+    background: radial-gradient(circle, rgba(255,100,0,0.9) 0%, rgba(255,69,0,0.4) 50%, transparent 100%) !important;
+}
+body.weather-autumn .trail {
+    background: radial-gradient(circle, rgba(210,105,30,0.9) 0%, rgba(139,69,19,0.5) 50%, transparent 100%) !important;
+}
+
+.trail {
+    position: fixed !important;
+    pointer-events: none !important;
+    z-index: 99997 !important;
+    border-radius: 50% !important;
+    transition: all 0.3s ease-out !important;
+}

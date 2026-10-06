@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+
+    <!-- Bootstrap ОДИН РАЗ -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- НАШ CSS -->
+    <link rel="stylesheet" href="{% static 'css/weather.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cursor.css' %}">
+</head>
+<body class="d-flex align-items-center min-vh-100 py-3">
+
+    <!-- Вверху после <body> -->
+    {% if user.is_authenticated %}
+        <div class="user-panel position-fixed top-0 end-0 p-3">
+            <a href="{% url 'profile' %}" class="btn btn-sm btn-outline-light">
+                👤 {{ user.username }}
+            </a>
+            <a href="/logout'/" class="btn btn-sm btn-outline-danger ms-2">
+                🚪 Выход
+            </a>
+        </div>
+    {% else %}
+
+    {% endif %}
+
+    <!-- ЭФФЕКТЫ ПОГОДЫ -->
+    <div class="weather-container" id="weatherContainer"></div>
+
+    <!-- ТВОЙ КОД ОСТАЕТСЯ БЕЗ ИЗМЕНЕНИЙ -->
+    <div class="container">
+        <!-- Шапка -->
+        <div class="row mb-5">
+            <div class="col-12">
+                <div class="logo d-flex justify-content-between align-items-center">
+                    <span>🌟 MyApp</span>
+                    <div>
+                        <a href="/register/" class="btn btn-light px-4 py-2">Регистрация</a>
+                        <a href="/login/" class="btn btn-outline-light me-3 px-4 py-2">Вход</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ОСНОВНОЙ КОНТЕНТ -->
+        <div class="position-relative min-vh-50 d-flex align-items-center justify-content-center flex-column">
+            <!-- Погода - ПРАВЫЙ УГОЛ ПО ЦЕНТРУ -->
+            <div class="position-absolute top-50 end-0 translate-middle-y me-4 z-3" style="right: 2rem;">
+                <div class="season-buttons text-end">
+                    <div class="dropdown">
+                        <button class="btn btn-season px-4 py-3 dropdown-toggle shadow-lg" type="button"
+                                id="weatherDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                                style="backdrop-filter: blur(15px);">
+                            🌤️ Стандарт
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end p-3 shadow-lg border-0" aria-labelledby="weatherDropdown"
+                            style="background: rgba(20,20,40,0.95); backdrop-filter: blur(20px); border-radius: 15px; min-width: 150px;">
+                            <li><button class="dropdown-item btn-weather p-3 w-100 text-start rounded-3 fw-semibold" data-weather="default">🌤️ Стандарт</button></li>
+                            <li><button class="dropdown-item btn-weather p-3 w-100 text-start rounded-3 fw-semibold" data-weather="winter">❄️ Зима</button></li>
+                            <li><button class="dropdown-item btn-weather p-3 w-100 text-start rounded-3 fw-semibold" data-weather="spring">🌧️ Весна</button></li>
+                            <li><button class="dropdown-item btn-weather p-3 w-100 text-start rounded-3 fw-semibold" data-weather="summer">☀️ Лето</button></li>
+                            <li><button class="dropdown-item btn-weather p-3 w-100 text-start rounded-3 fw-semibold" data-weather="autumn">🍂 Осень</button></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Форма регистрации ТОЧНО ПО ЦЕНТРУ -->
+            <div class="col-lg-4 col-md-6 col-sm-8 col-11">
+                <div class="login-card p-5 rounded-4 mx-auto shadow-lg" style="max-width: 420px;">
+                    <div class="text-center mb-5">
+                        <h1 class="text-white display-7 fw-bold mb-3 text-center">Присоединяйтесь!</h1>
+                        <p class="text-white-50 lead">Создайте аккаунт бесплатно</p>
+                    </div>
+
+                    <form method="post" action="/register/">
+                        {% csrf_token %}
+                        <!-- ОШИБКИ ФОРМЫ -->
+                        {% if form.errors %}
+                            <div class="alert alert-danger">
+                                <h6>❌ Ошибки:</h6>
+                                {{ form.errors }}
+                            </div>
+                        {% endif %}
+                        <div class="mb-4">
+                            <label class="form-label text-white h6 mb-3">👤 Логин</label>
+                            {{ form.username }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-white h6 mb-3">📧 Email</label>
+                            {{ form.email }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-white h6 mb-3">🔒 Пароль</label>
+                            {{ form.password1 }}
+                        </div>
+                        <div class="mb-4">
+                            <label class="form-label text-white h6 mb-3">🔐 Подтверждение пароля</label>
+                            {{ form.password2 }}
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-lg w-100 rounded-4 py-3 fw-bold shadow-lg mb-4">
+                            🎉 Создать аккаунт
+                        </button>
+                    </form>
+
+                    <div class="text-center pt-3">
+                        <p class="text-white-50 mb-2">Уже есть аккаунт?</p>
+                        <a href="/login/" class="btn btn-outline-light btn-lg px-5 py-2 fw-semibold rounded-pill">
+                            🚀 Войти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Копирайт -->
+        <div class="row mt-5 pt-5">
+            <div class="col-12 text-center">
+                <p class="copyright mb-0" style="color: rgba(255,255,255,0.8);">
+                    © 2026 MyApp. Все права защищены. | Made with ❤️
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS Погода -->
+    <script src="{% static 'js/weather.js' %}"></script>
+    <script src="{% static 'js/cursor.js' %}"></script>
+</body>
+</html>

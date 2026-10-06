@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Django Auth{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- ТВОИ CSS ПОГОДЫ -->
+    <link rel="stylesheet" href="{% static 'css/weather.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cursor.css' %}">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="/dashboard/">🏠 Home</a>
+            {% if user.is_authenticated %}
+                <span class="navbar-text me-3">ID: {{ user.personal_id }}</span>
+                <a href="/logout/" class="btn btn-outline-light">🚪 Выйти</a>
+            {% else %}
+                <a href="/login/" class="btn btn-outline-light me-2">🔐 Войти</a>
+                <a href="/register/" class="btn btn-light">📝 Регистрация</a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+        {% block content %}{% endblock %}
+    </div>
+
+    <!-- ТВОИ JS ПОГОДЫ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/weather.js' %}"></script>
+    <script src="{% static 'js/cursor.js' %}"></script>
+</body>
+</html>

@@ -1,0 +1,35 @@
+{% extends 'users/home.html' %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card shadow-lg">
+            <div class="card-body p-5">
+                <h2 class="text-center mb-4">🔑 Вход</h2>
+
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert {{ message.tags }}">{{ message }}</div>
+                    {% endfor %}
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label>Логин</label>
+                        {{ form.username }}
+                    </div>
+                    <div class="mb-3">
+                        <label>Пароль</label>
+                        {{ form.password }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Войти</button>
+                </form>
+
+                <p class="text-center mt-4">
+                    Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

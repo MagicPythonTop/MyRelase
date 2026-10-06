@@ -1,0 +1,363 @@
+/* Стили для Django форм */
+.form-control {
+    background: rgba(255,255,255,0.95) !important;
+    border: 1px solid rgba(255,255,255,0.3) !important;
+    border-radius: 15px !important;
+    padding: 15px !important;
+    color: #333 !important;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    height: 60px;
+}
+
+/* 📸 ОТСТУП между профилем и стеной */
+.profile-section + .wall-section {
+    margin-top: 2rem !important;  /* ✅ 2rem отступ */
+}
+
+.form-control:focus {
+    background: rgba(255,255,255,1) !important;
+    border-color: #ffd700 !important;
+    box-shadow: 0 0 0 0.2rem rgba(255,215,0,0.25) !important;
+    transform: translateY(-2px);
+}
+
+input:invalid {
+    border-color: #ff6b6b !important;
+}
+
+
+/* 🌦️ WEATHER EFFECTS */
+.weather-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* 🌤️ СТАНДАРТНАЯ ПОГОДА */
+body.weather-default {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+body.weather-default::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background:
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    animation: defaultFloat 20s ease-in-out infinite;
+    z-index: -2;
+}
+@keyframes defaultFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-20px) rotate(1deg); }
+    66% { transform: translateY(-10px) rotate(-1deg); }
+}
+/* ❄️ СНЕЖИНКИ SVG */
+.snowflake {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    opacity: 0;
+    animation: snowfall linear infinite;
+}
+
+.snowflake svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 4px rgba(255,255,255,0.8));
+}
+
+@keyframes snowfall {
+    0% {
+        transform: translateY(-100vh) rotate(0deg) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(-10vh) rotate(0deg) scale(1);
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(360deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* ВЕСНА - ДОЖДЬ */
+.raindrop {
+    position: absolute;
+    width: 2px;
+    height: 20px;
+    background: linear-gradient(to bottom, transparent, #4facfe);
+    animation: rain linear infinite;
+    opacity: 0;
+}
+
+@keyframes rain {
+    0% { transform: translateY(-100vh); opacity: 1; }
+    100% { transform: translateY(100vh); opacity: 0; }
+}
+
+/* ☀️ ПАДАЮЩИЕ ЛУЧИ СОЛНЦА */
+.sunray {
+    position: absolute;
+    width: 4px;
+    height: 40px;
+    background: linear-gradient(45deg, #ffd700, #ffed4e, #ffffff);
+    border-radius: 2px;
+    filter: drop-shadow(0 0 8px #ffd700);
+    opacity: 0;
+    animation: sunRayFall linear infinite;
+    transform: rotate(45deg);
+}
+
+@keyframes sunRayFall {
+    0% {
+        transform: translateY(-100vh) rotate(45deg) scale(0);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+        transform: translateY(-90vh) rotate(45deg) scale(1);
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(100vh) rotate(225deg) scale(0);
+        opacity: 0;
+    }
+}
+
+/* Маленькие искры */
+.sun-spark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #ffffff;
+    border-radius: 50%;
+    opacity: 0;
+    animation: sparkFall linear infinite;
+}
+
+@keyframes sparkFall {
+    0% { transform: translateY(-100vh) scale(0); opacity: 0; }
+    15% { opacity: 1; transform: translateY(-80vh) scale(1); }
+    85% { opacity: 1; }
+    100% { transform: translateY(100vh) scale(0); opacity: 0; }
+}
+
+/* ОСЕНЬ - ЛИСТЬЯ */
+.leaf {
+    font-size: 20px;
+    animation: fallLeaf linear infinite;
+    opacity: 0;
+}
+
+@keyframes fallLeaf {
+    0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+/* КНОПКИ ПОГОДЫ */
+.btn-season {
+    background: rgba(255,255,255,0.2) !important;
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s;
+    min-width: 150px;
+    border-radius: 20px;
+}
+
+.btn-season:hover {
+    background: rgba(255,255,255,0.4) !important;
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+}
+
+.dropdown-menu-end {
+    right: 0 !important;
+    left: auto !important;
+    background: rgba(20,20,40,0.95) !important;
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 15px;
+}
+
+.btn-weather {
+    border: none !important;
+    background: none !important;
+    color: white !important;
+    font-size: 1.1rem;
+    text-align: left;
+    border-radius: 10px;
+}
+
+.btn-weather:hover {
+    background: rgba(255,255,255,0.15) !important;
+    color: white !important;
+    transform: translateX(8px);
+}
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', sans-serif;
+            padding-top: 8rem;
+        }
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .login-card {
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border-radius: 25px;
+        }
+        .btn-season {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(15px);
+            border: 2px solid rgba(255,255,255,0.3);
+            color: white;
+            font-weight: 600;
+            min-width: 150px;
+            border-radius: 20px;
+        }
+        .form-control {
+            background: rgba(255,255,255,0.9);
+            border: none;
+            border-radius: 15px;
+            padding: 15px;
+        }
+        .btn-warning {
+            background: linear-gradient(45deg, #ff6b6b, #feca57);
+            border: none;
+        }
+
+/* ФОНОВЫЕ ИЗОБРАЗЕНИЯ ПОГОДЫ - БЕЗ ПОЛОМКИ ВЕРСТКИ */
+body.weather-default {
+    background-image: url('../images/default.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+body.weather-winter {
+    background-image: url('../images/winter-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+body.weather-spring {
+    background-image: url('../images/springs-bg.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+body.weather-summer {
+    background-image: url('../images/summer-bg.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+body.weather-autumn {
+    background-image: url('../images/autumns-bg.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* АВАТАР — ПРОСТОЙ КЛИК */
+.avatar-upload, .avatar-clickable {
+    cursor: pointer;
+}
+
+.avatar-modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.95);
+    z-index: 99999;
+}
+
+.avatar-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-avatar-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 20px;
+}
+
+.modal-buttons { position: absolute; top: 30px; right: 30px; gap: 10px; }
+.modal-btn, .btn-close {
+    padding: 12px 24px; border-radius: 25px; border: none;
+    color: white; font-weight: bold;
+}
+.btn-change { background: #4a90e2; }
+.btn-delete { background: #ff4757; }
+.btn-close {
+    position: absolute; top: 20px; right: 20px;
+    width: 50px; height: 50px; border-radius: 50%;
+    background: rgba(255,255,255,0.2); font-size: 24px;
+}
+
+/* ТВОЙ КУРСОР В МОДАЛЕ */
+.avatar-modal, .avatar-modal * {
+    cursor: inherit !important;
+}
+
+/* Если cursor.js меняет классы — применяем */
+.avatar-modal {
+    --cursor-x: 0px;
+    --cursor-y: 0px;
+}
+
+
+.cursor-none {
+    cursor: none !important;
+}
+
+/* Адаптив */
+@media (max-width: 768px) {
+    .position-absolute.top-50.end-0.translate-middle-y {
+        right: 1rem !important;
+        top: 55% !important;
+    }
+
+    .user-panel {
+        top: 10px !important;
+        right: 10px !important;
+        left: 10px !important;
+        justify-content: center;
+    }
+    .user-panel .badge {
+        font-size: 0.75rem !important;
+        padding: 0.4rem 0.6rem !important;
+    }
+
+}
+
+
+

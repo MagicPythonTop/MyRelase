@@ -1,0 +1,39 @@
+/* 🔥 АНИМАЦИИ ЛАЙКОВ */
+.avatar-48 { transition: transform 0.2s ease; }
+.avatar-48:hover { transform: scale(1.05); }
+
+.like-btn {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.like-btn:hover {
+    color: #ff4757 !important;
+    transform: scale(1.1) !important;
+    background: rgba(255, 71, 87, 0.1) !important;
+}
+.like-btn:active .like-icon {
+    transform: scale(0.9);
+    color: #ff4757 !important;
+}
+
+.like-count, .comment-count {
+    min-width: 24px;
+    font-size: 0.9em;
+}
+.post-img { transition: transform 0.3s ease; }
+.post-img:hover { transform: scale(1.02); }
+.post-actions { backdrop-filter: blur(10px); }
+.post-text { line-height: 1.5; word-wrap: break-word; }
+
+/* Анимация сердца */
+.like-btn:active {
+    transform: scale(0.95) !important;
+}
+
+.like-btn .like-icon {
+    transition: all 0.2s ease;
+}
+
+.fas.fa-heart {
+    color: #ff4757 !important;  /* Красное сердце */
+    text-shadow: 0 0 5px rgba(255, 71, 87, 0.5);
+}

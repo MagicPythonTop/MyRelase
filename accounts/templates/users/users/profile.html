@@ -1,0 +1,40 @@
+{% extends 'users/home.html' %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white text-center">
+                    <h2>👤 Привет, {{ user.username }}!</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row text-center">
+                        <div class="col-md-4">
+                            {% if user.avatar %}
+                                <img src="{{ user.avatar.url }}" class="img-fluid rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <div class="avatar-placeholder bg-secondary rounded-circle d-flex align-items-center justify-content-center mb-3" style="width: 150px; height: 150px;">
+                                    👤
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h4>{{ user.email }}</h4>
+                            {% if user.phone %}
+                                <p>📱 {{ user.phone }}</p>
+                            {% endif %}
+                            <p>🕒 Зарегистрирован: {{ user.date_joined|date:"d.m.Y H:i" }}</p>
+                        </div>
+                    </div>
+
+                    <hr>
+                    <div class="text-center">
+                        <a href="{% url 'logout' %}" class="btn btn-danger">🚪 Выйти</a>
+                        <a href="{% url 'home' %}" class="btn btn-secondary">🏠 На главную</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

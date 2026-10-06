@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - {{ user.username }}</title>
+
+    <!-- Bootstrap + Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- ТВОИ CSS ПОГОДЫ -->
+    <link rel="stylesheet" href="{% static 'css/weather.css' %}">
+    <link rel="stylesheet" href="{% static 'css/cursor.css' %}">
+
+    <style>
+    /* МИНИМАЛЬНЫЕ стили - НЕ ломают погоду */
+    .vk-card {
+        backdrop-filter: blur(25px);
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.2);
+        box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+    }
+    .user-panel {
+        backdrop-filter: blur(20px);
+        background: rgba(0,0,0,0.7);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+        backdrop-filter: blur(20px);
+    }
+    .dashboard-top-row {
+        margin-top: 3rem !important; /* Только под навбар */
+        padding-top: 1rem !important;
+    }
+
+    /* СВЕРХВЫСОКИЙ z-index ДЛЯ НАВИГАЦИИ */
+    .user-panel { z-index: 9999 !important; }
+    .dropdown-weather .dropdown-menu, .dropdown-weather .dropdown-menu.show { z-index: 10000 !important; }
+
+    /* КОНТЕНТ ПОД ПАНЕЛЬЮ */
+    .content-main { padding-top: 70px !important; }
+
+    /* HOVER ЭФФЕКТЫ */
+    .btn-weather:hover {
+        background: rgba(255,255,255,0.2) !important;
+        transform: translateX(3px);
+        transition: all 0.2s ease;
+    }
+    .logout-btn:hover {
+        background: rgba(220,53,69,0.3) !important;
+        transform: scale(1.05);
+    }
+
+    /* 📸 ОТСТУП между профилем и стеной */
+    .profile-section + .wall-section {
+        margin-top: 5rem !important;  /* ✅ 2rem отступ */
+    }
+
+    .avatar-modal, .avatar-modal * {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><circle cx="16" cy="16" r="8" fill="%23ff4500" opacity="0.9"/><circle cx="16" cy="16" r="4" fill="%23ff0000" opacity="1"/></svg>') 16 16, auto !important;
+    cursor: crosshair !important; /* fallback */
+}
+
+    /* MOBILE */
+    @media (max-width: 768px) {
+        .content-main { padding-top: 80px !important; }
+        .user-panel {
+            top: 5px !important; right: 5px !important; left: 5px !important;
+            flex-wrap: wrap; gap: 0.25rem;
+        }
+    }
+    </style>
+
+    <style>
+.like-btn {
+    transition: all 0.2s ease !important;
+}
+.like-btn:active {
+    transform: scale(0.95) !important;
+}
+.fas.fa-heart {
+    color: #ff4757 !important;
+    text-shadow: 0 0 8px rgba(255, 71, 87, 0.4);
+}
+.like-hover-effect:hover {
+    background: rgba(255,255,255,0.1) !important;
+    border-color: #ff4757 !important;
+}
+</style>
+
+<style>
+/* 🔥 КНОПКИ УДАЛЕНИЯ - ВСЕГДА ВИДИМЫ */
+.delete-comment-btn {
+    transition: all 0.2s ease !important;
+    border-radius: 4px !important;
+    min-width: 32px !important;
+}
+
+.delete-comment-btn:hover {
+    background: #dc3545 !important;
+    border-color: #dc3545 !important;
+    color: white !important;
+    transform: scale(1.05) !important;
+}
+
+/* Комментарии стиль */
+.comment-item {
+    transition: background 0.2s ease;
+}
+
+.comment-item:hover {
+    background: rgba(255,255,255,0.05) !important;
+}
+
+/* Форма без границ */
+.form-control:focus {
+    border-color: transparent !important;
+    box-shadow: none !important;
+}
+
+</style>
+
+<style>
+/* 🔥 КОРЗИНА ВИДНАЯ + АНИМАЦИЯ */
+.delete-comment-btn {
+    z-index: 10 !important;
+}
+
+.delete-comment-btn:hover {
+    background: rgba(220,53,69,0.3) !important;
+    opacity: 1 !important;
+}
+
+.delete-comment-btn:hover i {
+    color: #dc3545 !important;
+    transform: scale(1.2) !important;
+}
+
+.hover-bg:hover .delete-comment-btn {
+    opacity: 1 !important;
+}
+
+/* Анимация удаления */
+.comment-item {
+    transition: all 0.3s ease;
+}
+</style>
+
+
+</head>
+<body class="weather-default">
+
+    <!-- 🌦️ ПОГОДА - НИЧЕГО НЕ МЕНЯЕМ -->
+    <div class="weather-container" id="weatherContainer"></div>
+
+    <!-- 🔝 НАВИГАЦИЯ - МАКСИМАЛЬНО ВЫСОКО -->
+    <div class="user-panel position-fixed top-0 end-0 p-2 m-2 shadow-xl" style="
+        backdrop-filter: blur(25px);
+        background: rgba(0,0,0,0.9);
+        border-radius: 20px;
+        border: 1px solid rgba(255,255,255,0.3);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    ">
+        <div class="d-flex align-items-center gap-1 flex-nowrap">
+            <!-- 👤 USER INFO -->
+            <span class="badge bg-warning text-dark fs-6 px-2 py-1.5 shadow-sm fw-bold me-1">👤 {{ user.username }}</span>
+            <span class="badge bg-info text-dark fs-6 px-2 py-1.5 shadow-sm fw-bold me-1">🆔 {{ user.personal_id }}</span>
+
+            <!-- 🌦️ ПОГОДА -->
+            <div class="dropdown dropdown-weather me-1">
+                <button class="btn btn-season px-2 py-1.5 dropdown-toggle shadow border-2 fs-6 fw-semibold text-nowrap"
+                        type="button" id="weatherDropdown" data-bs-toggle="dropdown" aria-expanded="false"
+                        style="backdrop-filter: blur(20px); border-color: rgba(255,255,255,0.5); min-width: 75px; font-size: 0.85rem;"
+                        title="Сменить погоду">
+                    🌤️ Стандарт
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end p-1 shadow-lg border-0" aria-labelledby="weatherDropdown"
+                    style="background: rgba(20,20,40,0.98); backdrop-filter: blur(30px); border-radius: 12px; min-width: 130px; margin-top: 2px;">
+                    <li><button class="dropdown-item btn-weather p-2 w-100 text-start rounded-2 fw-semibold fs-6 text-white" data-weather="default">🌤️ Стандарт</button></li>
+                    <li><button class="dropdown-item btn-weather p-2 w-100 text-start rounded-2 fw-semibold fs-6 text-white active-weather" data-weather="winter">❄️ Зима</button></li>
+                    <li><button class="dropdown-item btn-weather p-2 w-100 text-start rounded-2 fw-semibold fs-6 text-white" data-weather="spring">🌧️ Весна</button></li>
+                    <li><button class="dropdown-item btn-weather p-2 w-100 text-start rounded-2 fw-semibold fs-6 text-white" data-weather="summer">☀️ Лето</button></li>
+                    <li><button class="dropdown-item btn-weather p-2 w-100 text-start rounded-2 fw-semibold fs-6 text-white" data-weather="autumn">🍂 Осень</button></li>
+                </ul>
+            </div>
+
+            <!-- 🚪 LOGOUT -->
+            <a href="/logout/" class="btn btn-outline-light rounded-pill px-2 py-1.5 shadow fw-bold border-2 fs-6 logout-btn"
+               style="border-color: rgba(255,255,255,0.5); min-width: 36px; height: 32px;"
+               title="Выход">
+                🚪
+            </a>
+        </div>
+    </div>
+
+    <!-- ✅ ОСНОВНОЙ КОНТЕНТ (ПОД ПАНЕЛЬЮ) -->
+    <div class="container-fluid content-main">
+        <div class="row g-4">
+
+            <!-- 🟢 ЛЕВАЯ ПАНЕЛЬ -->
+            <div class="col-lg-3 col-md-4">
+                <!-- МЕНЮ -->
+                <div class="vk-card p-4 rounded-4 mb-4">
+                    <h5 class="text-white mb-4">☰ Меню</h5>
+                    <div class="d-grid gap-2">
+                        <a href="/{{ user.personal_id }}/" class="btn btn-outline-light rounded-3 py-3 active">
+    <i class="bi bi-house me-2"></i>Новости
+</a>
+                        <a href="#" class="btn btn-outline-light rounded-3 py-3">
+                            <i class="bi bi-person me-2"></i>Профиль
+                        </a>
+                        <a href="#" class="btn btn-outline-light rounded-3 py-3">
+                            <i class="bi bi-people me-2"></i>Друзья
+                        </a>
+                        <a href="#" class="btn btn-outline-light rounded-3 py-3">
+                            <i class="bi bi-music-note me-2"></i>Музыка
+                        </a>
+                        <a href="#" class="btn btn-outline-light rounded-3 py-3">
+                            <i class="bi bi-controller me-2"></i>Игры
+                        </a>
+                        <a href="#" class="btn btn-outline-light rounded-3 py-3">
+                            <i class="bi bi-gear me-2"></i>Настройки
+                        </a>
+                    </div>
+                </div>
+
+                <!-- СТАТИСТИКА -->
+                <div class="vk-card p-4 rounded-4">
+                    <h6 class="text-white mb-4">📊 Статистика</h6>
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="text-white-50 fs-6 mb-2">Друзья</div>
+                            <div class="fs-2 fw-bold text-warning">12</div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-white-50 fs-6 mb-2">Фото</div>
+                            <div class="fs-2 fw-bold text-info">156</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                <!-- 🟡 ОСНОВНОЙ КОНТЕНТ -->
+<div class="col-lg-9 col-md-8">
+    {% if visiting_profile %}
+<!-- 👤 ЧУЖОЙ ПРОФИЛЬ /ID123/ — ТОЧНАЯ КОПИЯ ТВОЕГО -->
+<div class="vk-card p-4 mb-4 rounded-4 profile-section">
+    <div class="row align-items-center">
+        <!-- АВАТАР СЛЕВА (как у тебя) -->
+        <div class="col-md-2 text-center mb-3 mb-md-0 avatar-container">
+            <img id="avatarImg" data-is-owner="false"
+                 src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'images/default_avatar.jpg' %}{% endif %}"
+                 class="rounded-circle shadow-lg mb-3"
+                 style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3); cursor: pointer;"
+                 alt="{{ profile_user.username }}">
+            <div class="avatar-overlay">
+                <!-- статус онлайн/оффлайн -->
+                <span class="status-indicator status-{{ profile_user.is_online|lower }}">
+                    <i class="fas fa-circle"></i>
+                </span>
+            </div>
+        </div>
+
+        <!-- ИНФО СПРАВА (точно как у тебя, БЕЗ почты) -->
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between mb-3">
+                <div>
+                    <h2 class="text-white mb-1">{{ profile_user.username }}</h2>
+                    <span class="badge bg-info fs-6 px-3 py-1">🆔 {{ profile_id }}</span>
+                </div>
+                <!-- КНОПКА ДОБАВИТЬ В ДРУЗЬЯ (вместо Редактировать/Настройки) -->
+                <div>
+                    <button class="btn btn-primary px-4 add-friend-btn" data-user-id="{{ profile_id }}">
+                        <i class="fas fa-user-plus me-2"></i>Добавить в друзья
+                    </button>
+                </div>
+            </div>
+
+            <!-- СТАТИСТИКА (точно как у тебя, БЕЗ почты) -->
+            <div class="row text-white-50 fs-6">
+                <div class="col-md-3">{{ profile_user.date_joined|date:"d.m.Y" }}</div>
+                <div class="col-md-3">Друзей: <strong>{{ profile_user.friends_count|default:0 }}</strong></div>
+                <div class="col-md-3">Постов: <strong>{{ profile.posts_count|default:0 }}</strong></div>
+                <div class="col-md-3">
+                    <i class="fas fa-circle {{ profile_user.is_online|yesno:'text-success,text-muted' }} me-1"></i>
+                    {{ profile_user.is_online|yesno:'Онлайн,Офлайн' }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    {% else %}
+        <!-- 🆔 ТВОЙ ПРОФИЛЬ /dashboard/ -->
+        <div class="vk-card p-4 mb-4 rounded-4 profile-section">
+            <div class="row align-items-center">
+                <div class="col-md-2 text-center mb-3 mb-md-0 avatar-container">
+                    <img id="avatarImg" data-is-owner="true"
+                 src="{% if profile.avatar %}{{ profile.avatar.url }}{% else %}{% static 'images/default_avatar.jpg' %}{% endif %}"
+                         class="rounded-circle shadow-lg mb-3"
+                         style="width: 120px; height: 120px; object-fit: cover; border: 4px solid rgba(255,255,255,0.3); cursor: pointer;"
+                         alt="Avatar">
+                    <div class="avatar-overlay">
+                    <input type="file" id="avatarInput" accept="image/*" class="d-none">
+
+                    </div>
+
+                </div>
+                <div class="col-md-10">
+                    <div class="d-flex justify-content-between mb-3">
+                        <div>
+                            <h2 class="text-white mb-1">{{ user.username }}</h2>
+                            <span class="badge bg-info fs-6 px-3 py-1">🆔 {{ user.personal_id }}</span>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-light me-2 px-4 edit-profile-btn">✏️ Редактировать</button>
+                            <button class="btn btn-outline-light px-4">⚙️ Настройки</button>
+                        </div>
+                    </div>
+                    <div class="row text-white-50 fs-6">
+                        <div class="col-md-3"><strong>{{ user.email }}</strong></div>
+                        <div class="col-md-3">{{ user.date_joined|date:"d.m.Y" }}</div>
+                        <div class="col-md-3">Друзей: <strong>12</strong></div>
+                        <div class="col-md-3"><i class="bi bi-circle-fill text-success me-1"></i>Онлайн</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- ✅ ОТСТУП -->
+    <div style="height: 4rem;"></div>
+
+<!-- ✍️ СТЕНА VK СТИЛЬ (правильные отступы) -->
+<div class="vk-card p-4 mb-4 rounded-4 wall-section"
+     data-current-user="{{ user.personal_id|default:0 }}"
+     data-profile-id="{{ profile_id|default:user.personal_id|default:0 }}"
+     id="wallSection">
+    {% if is_owner %}
+        <!-- 📝 ФОРМА ПОСТА -->
+        <div class="wall-post-form mb-4">
+            <div class="d-flex align-items-start gap-3">
+                <img src="{% if user.profile.avatar %}{{ user.profile.avatar.url }}{% else %}{% static 'images/default_avatar.jpg' %}{% endif %}"
+                     class="rounded-circle" style="width:48px;height:48px;object-fit:cover;flex-shrink:0;">
+
+                <div class="flex-grow-1">
+                    <textarea id="wallPostInput" class="form-control wall-textarea rounded-3 p-3 fs-6"
+                              rows="3" placeholder="Что у вас нового?" maxlength="5000"></textarea>
+
+                    <!-- ПРЕВЬЮ ФОТО -->
+                    <div id="postImagePreview" class="mt-2 p-3 bg-dark rounded-3 d-none">
+                        <img id="previewImg" class="rounded-3 w-100" style="max-height:200px;object-fit:cover;">
+                        <button id="removeImageBtn" class="btn btn-sm btn-outline-danger mt-2">❌ Убрать</button>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center mt-2">
+                        <div class="post-actions">
+                            <label class="btn btn-sm btn-outline-light mb-0 px-3 py-1 rounded-pill">
+                                <i class="fas fa-image me-1"></i>Фото
+                                <input type="file" id="postImageInput" accept="image/*" class="d-none">
+                            </label>
+                        </div>
+                        <button id="postSubmitBtn" class="btn btn-warning px-5 py-2 fw-bold rounded-pill shadow-lg">
+                            📤 Опубликовать
+                        </button>
+                    </div>
+                    <div id="postCharsCounter" class="text-end text-muted small mt-1">0 / 5000</div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    <!-- 📰 ЗАГОЛОВОК СТЕНЫ -->
+    <h5 class="text-white mb-3">
+        {% if visiting_profile %}{{ profile_user.username }}'s стена{% else %}Твоя стена{% endif %}
+    </h5>
+
+    <!-- 📱 ПОСТЫ -->
+    <div id="wallPostsContainer" class="wall-posts">
+        <p class="text-white-50 text-center py-5 mb-0">Пока нет постов...</p>
+    </div>
+</div>
+
+<script>
+// ✅ НАДЁЖНЫЙ DJANGO_VARS с проверками
+window.DJANGO_CONFIG = {
+    currentUserId: "{% if current_user.personal_id %}{{ current_user.personal_id }}{% else %}0{% endif %}",
+    profileId: "{% if profile_id %}{{ profile_id }}{% else %}{% if current_user.personal_id %}{{ current_user.personal_id }}{% else %}0{% endif %}{% endif %}",
+    isOwner: "{% if is_owner %}true{% else %}false{% endif %}"
+};
+console.log('🎯 DJANGO_CONFIG:', window.DJANGO_CONFIG);
+</script>
+
+
+    <!-- ТВОИ JS ПОГОДЫ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{% static 'js/weather.js' %}"></script>
+    <script src="{% static 'js/cursor.js' %}"></script>
+    <script src="{% static 'js/stena.js' %}"></script>
+
+    <script>
+// 👤 Переход на /id12345
+document.getElementById('visitProfile').addEventListener('click', function() {
+    const userId = document.getElementById('userIdInput').value.trim();
+
+    if (userId && /^\d+$/.test(userId)) {
+        document.body.style.opacity = '0';
+        setTimeout(() => {
+            window.location.href = `/id${userId}/`;  // ✅ /id12345
+        }, 200);
+    }
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.avatar-clickable').forEach(img => {
+        img.addEventListener('click', function() {
+            document.getElementById('modalAvatar').src = this.src;
+            new bootstrap.Modal(document.getElementById('avatarModal')).show();
+        });
+    });
+});
+</script>
+
+<script>
+// 🔥 ДИАГНОСТИКА - добавь ЭТО
+document.addEventListener('click', function(e) {
+    console.log('🔍 КЛИК ПО:', e.target);
+    if (e.target.closest('.like-btn')) {
+        console.log('✅ LIKE-BTN НАЙДЕН!');
+        const btn = e.target.closest('.like-btn');
+        console.log('📱 POST-ID:', btn.dataset.postId);
+    }
+});
+</script>
+
+</body>
+</html>
